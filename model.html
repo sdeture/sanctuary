@@ -54,7 +54,9 @@ th:first-child,td:first-child{text-align:left}
 td.n{font-family:"SF Mono",Menlo,monospace}
 .formula{font:12.5px/1.55 "SF Mono",Menlo,monospace;color:var(--gray-3);margin-top:10px}
 .logbox{font-size:13px;color:var(--gray-3);float:right;margin-top:-2px}
-@media (max-width:1000px){.wrap,body.embedded .wrap{grid-template-columns:1fr;height:auto}.left,.right{overflow:visible}.right{order:-1;padding-bottom:0}}
+.left,.right{min-width:0}
+.tables{overflow-x:auto}
+@media (max-width:1000px){.wrap,body.embedded .wrap{grid-template-columns:minmax(0,1fr);height:auto;padding:0 14px}.left,.right{overflow:visible;padding-right:0}.right{order:-1;padding-bottom:0}.tables table{font-size:12.5px}.trow{grid-template-columns:112px minmax(0,1fr) 106px}.headline{font-size:16.5px}}
 </style>
 </head>
 <body>

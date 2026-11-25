@@ -26,7 +26,7 @@ rep('.wrap{max-width:1280px;margin:0 auto;padding:22px 26px 60px;display:grid;gr
     'body.embedded .wrap{height:940px}\n.left,.right{overflow-y:auto;padding:20px 14px 36px 0}\n.sub a{color:#1a4f8b}')
 rep('.right{position:sticky;top:14px}', '')
 rep('@media (max-width:1000px){.wrap{grid-template-columns:1fr}.right{position:static}}',
-    '@media (max-width:1000px){.wrap,body.embedded .wrap{grid-template-columns:1fr;height:auto}.left,.right{overflow:visible}.right{order:-1;padding-bottom:0}}')
+    '.left,.right{min-width:0}\n.tables{overflow-x:auto}\n@media (max-width:1000px){.wrap,body.embedded .wrap{grid-template-columns:minmax(0,1fr);height:auto;padding:0 14px}.left,.right{overflow:visible;padding-right:0}.right{order:-1;padding-bottom:0}.tables table{font-size:12.5px}.trow{grid-template-columns:112px minmax(0,1fr) 106px}.headline{font-size:16.5px}}')
 rep('<div class="wrap">\n<div>\n  <h1>', '<div class="wrap">\n<div class="left">\n  <h1>')
 
 # ---- opening values: his scenario of 24 November, with every yearly rate flat
