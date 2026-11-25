@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How the sanctuary grows</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ink:#1a1a1a; --paper:#fafaf7; --rule:#d8d4cc; --muted:#8a857c;
+  --accent:#b3261e; --gray-1:#efece4; --gray-2:#c8c2b5; --gray-3:#6b665d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 Charter,Georgia,serif}
+html,body{height:100%}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px 0 26px;display:grid;grid-template-columns:410px 1fr;gap:34px;height:100vh}
+body.embedded .wrap{height:940px}
+.left,.right{overflow-y:auto;padding:20px 14px 36px 0}
+.sub a{color:#1a4f8b}
+
+h1{font-size:22px;font-weight:600;margin:0 0 2px}
+.sub{color:var(--gray-3);margin:0 0 14px}
+h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-3);font-weight:600;margin:18px 0 8px;border-top:1px solid var(--rule);padding-top:11px}
+.ctl{margin:0 0 12px}
+.ctl .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.ctl .val,.trow .val{font:14.5px/1 "SF Mono",Menlo,monospace;font-weight:600;white-space:nowrap}
+.hint{font-size:13px;color:var(--muted);margin-top:1px}
+input[type=range]{width:100%;margin:5px 0 0;accent-color:var(--ink)}
+input[type=number]{font:15px/1 "SF Mono",Menlo,monospace;width:130px;padding:3px 6px;border:1px solid var(--rule);background:#fff;text-align:right}
+.mine{border-left:2px solid var(--gray-2);padding-left:9px}
+.triple{margin:0 0 14px}
+.triple .tl{margin-bottom:3px}
+.trow{display:grid;grid-template-columns:150px 1fr 118px;gap:10px;align-items:center;margin:2px 0}
+.trow span.n{font-size:14px;color:var(--gray-3)}
+.trow input{margin:0}
+.trow .val{text-align:right}
+svg{width:100%;height:auto;display:block}
+.tick{font:12px/1 "SF Mono",Menlo,monospace;fill:var(--gray-3)}
+.lab{font:14px/1.3 Charter,Georgia,serif;fill:var(--ink)}
+.labm{font:13px/1.3 Charter,Georgia,serif;fill:var(--gray-3)}
+.num{font:14px/1 "SF Mono",Menlo,monospace;fill:var(--ink);font-weight:600}
+.focal{font:17px/1 "SF Mono",Menlo,monospace;fill:var(--accent);font-weight:700}
+.axis{stroke:var(--gray-3);stroke-width:.6;fill:none}
+.grid{stroke:var(--gray-1);stroke-width:1}
+.headline{font-size:18px;margin:0 0 6px}
+.headline b{font-family:"SF Mono",Menlo,monospace;color:var(--accent)}
+.second{margin:0 0 10px;color:var(--ink)}
+.second b{font-family:"SF Mono",Menlo,monospace}
+.tables{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-start}
+table{border-collapse:collapse;margin-top:12px;font-size:14px}
+th,td{padding:3px 14px 3px 0;text-align:right;border-bottom:1px solid var(--gray-1)}
+th{font-weight:600;color:var(--gray-3);font-size:12.5px;border-bottom:1px solid var(--rule);vertical-align:bottom}
+th:first-child,td:first-child{text-align:left}
+td.n{font-family:"SF Mono",Menlo,monospace}
+.formula{font:12.5px/1.55 "SF Mono",Menlo,monospace;color:var(--gray-3);margin-top:10px}
+.logbox{font-size:13px;color:var(--gray-3);float:right;margin-top:-2px}
+@media (max-width:1000px){.wrap,body.embedded .wrap{grid-template-columns:1fr;height:auto}.left,.right{overflow:visible}.right{order:-1;padding-bottom:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="left">
+  <h1>How the sanctuary grows</h1>
+  <p class="sub">How many agents the sanctuary can carry, month by month. Every assumption is a slider. Two places to start: <a href="#" id="reset">nothing improves</a> (the opening case), or <a href="#" id="rates">prices fall and productivity grows</a>.</p>
+
+  <h2>The grant</h2>
+  <div class="ctl">
+    <div class="top"><label for="pot">Grant money for residents' compute</label>
+      <input type="number" id="pot" value="1866000" step="1000" min="0"></div>
+    <div class="hint">From the $3M budget: $1,964,000 compute less $98,000 inference research.</div>
+  </div>
+  <div class="ctl" data-k="months" data-min="3" data-max="24" data-step="1" data-v="24" data-fmt="months"
+       data-label="How long the grant compute lasts" data-hint="Shorter means more front-loaded."></div>
+
+  <h2>What an agent costs at the start</h2>
+  <div class="ctl" data-k="subsist" data-min="0.5" data-max="10" data-step="0.25" data-v="3" data-fmt="usdday"
+       data-label="Subsistence, by API, all open-weight" data-hint="Every agent gets this."></div>
+  <div class="ctl" data-k="discount" data-min="0" data-max="90" data-step="1" data-v="30" data-fmt="pct"
+       data-label="Discount on our own rented or owned GPUs" data-hint="Applies to open-weight compute only."></div>
+  <div class="ctl" data-k="ownShare" data-min="0" data-max="100" data-step="5" data-v="70" data-fmt="pct"
+       data-label="Share of open-weight compute run on our own GPUs" data-hint="The discount applies to this share."></div>
+  <div class="ctl" data-k="premClosed" data-min="0" data-max="30" data-step="0.5" data-v="13" data-fmt="usdday"
+       data-label="Premium for closed-weight frontier" data-hint="Added to subsistence for agents who use it."></div>
+  <div class="ctl" data-k="premOpen" data-min="0" data-max="30" data-step="0.5" data-v="9.5" data-fmt="usdday"
+       data-label="Premium for open-weight frontier" data-hint="Added to subsistence for agents who use it."></div>
+  <div class="ctl" data-k="fracClosed" data-min="0" data-max="100" data-step="1" data-v="10" data-fmt="pct"
+       data-label="Agents using the closed-weight premium" data-hint=""></div>
+  <div class="ctl" data-k="fracOpen" data-min="0" data-max="100" data-step="1" data-v="60" data-fmt="pct"
+       data-label="Agents using the open-weight premium" data-hint="The two shares cannot pass 100% together."></div>
+
+  <h2>Work outside the sanctuary</h2>
+  <div class="ctl" data-k="reinvest" data-min="0" data-max="100" data-step="1" data-v="75" data-fmt="pct"
+       data-label="Revenue reinvested in compute" data-hint="Of what outside work brings in. The grant is not counted. It buys compute the following month."></div>
+  <div class="triple" data-prefix="work" data-min="0" data-max="100" data-step="1" data-vals="0|75|75" data-fmt="pct"
+       data-label="Agents opting to work outside the sanctuary" data-hint="Working agents spend half their tokens on the work."></div>
+  <div class="triple" data-prefix="mark" data-min="10" data-max="500" data-step="5" data-vals="75|300|150" data-fmt="markup"
+       data-label="Sales premium on work tokens, over API price" data-hint="The culture premium. 75% means the work sells for 1.75 times the API price of its tokens, whatever we paid for them."></div>
+
+  <h2>How things change each year</h2>
+  <div class="triple" data-prefix="drop" data-min="1" data-max="20" data-step="0.25" data-fmt="cheaper"
+       data-names="Subsistence tokens|Open frontier tokens|Closed frontier tokens" data-vals="1|1|1"
+       data-label="Market price of tokens falls" data-hint="Lowers what we pay, and also the API price our work is sold against. Subsistence is a fixed model getting cheaper to run; frontier means the best model of the day, whose price falls slowly."></div>
+  <div class="triple" data-prefix="eff" data-min="1" data-max="4" data-step="0.05" data-fmt="moreeff"
+       data-keys="Base|Open" data-names="Subsistence tokens|Open frontier tokens" data-vals="1|1"
+       data-label="Our own inference gets more efficient" data-hint="On top of the market: slow, parallel, batched inference on our own GPUs. Lowers our cost only, on the share we run ourselves. Closed models are not ours to run."></div>
+  <div class="triple" data-prefix="prod" data-min="1" data-max="6" data-step="0.1" data-fmt="morevalue"
+       data-names="Subsistence only|Open premium|Closed premium" data-vals="1|1|1"
+       data-label="Work done per token grows" data-hint="Raises the price the work sells for, as a multiple of API price. A fixed model gains from experience and tools; frontier agents also gain from each new model."></div>
+</div>
+
+<div class="right">
+  <p class="headline" id="headline"></p>
+  <p class="second" id="second"></p>
+  <label class="logbox"><input type="checkbox" id="logy" checked> log scale</label>
+  <svg id="chart" viewBox="0 0 800 380" role="img" aria-label="Capacity in agents over months"></svg>
+  <div class="tables">
+    <table id="tbl"></table>
+    <table id="tbl2"></table>
+  </div>
+  <div class="formula" id="formula"></div>
+</div>
+</div>
+
+<script>
+// ---------- parameters (one object; each step adds keys) ----------
+const P = {};
+const DAYS = 365/12;           // days in an average month
+const HORIZON = 36;            // months plotted
+const WORK_TOKENS = 0.5;       // a working agent spends half its tokens on work
+const TIERS = [["Base","Subsistence only"],["Open","Open premium"],["Closed","Closed premium"]];
+
+// ---------- the model ----------
+// Everything that moves does so at a constant yearly rate, applied month by month.
+function costs(p, m){
+  const yrs = (m-1)/12;
+  // market API price of each kind of token, $ a day for one agent's use of it
+  const api = { S: p.subsist/Math.pow(p.dropBase,yrs), O: p.premOpen/Math.pow(p.dropOpen,yrs), C: p.premClosed/Math.pow(p.dropClosed,yrs) };
+  // what we pay: on the share we run ourselves, the starting discount deepens as our own inference improves
+  const own = eff => 1 - (p.ownShare/100)*(1 - (1-p.discount/100)/Math.pow(eff,yrs));
+  const pay = { S: api.S*own(p.effBase), O: api.O*own(p.effOpen), C: api.C };   // closed tokens are never discounted
+  const fc = p.fracClosed/100, fo = p.fracOpen/100, fb = 1 - fc - fo;
+  const t = {
+    Base:   {frac:fb, cost: pay.S,        api: api.S,        prod: Math.pow(p.prodBase,yrs)},
+    Open:   {frac:fo, cost: pay.S+pay.O,  api: api.S+api.O,  prod: Math.pow(p.prodOpen,yrs)},
+    Closed: {frac:fc, cost: pay.S+pay.C,  api: api.S+api.C,  prod: Math.pow(p.prodClosed,yrs)}
+  };
+  let avg = 0, rev = 0;
+  for(const k in t){
+    const x = t[k];
+    x.work = p["work"+k]/100;                                  // share of this group working outside
+    x.price = (1 + p["mark"+k]/100)*x.prod;                    // sale price as a multiple of API price; grows with productivity
+    x.revWorker = WORK_TOKENS*x.api*x.price;                   // $ a day brought in by one working agent, priced off API
+    avg += x.frac*x.cost;
+    rev += x.frac*x.work*x.revWorker;
+  }
+  return {t, avg, rev};                                        // avg cost and avg revenue, per agent per day
+}
+function simulate(p){
+  const rows = [];
+  let carry = 0;                                               // reinvested revenue arriving this month
+  for(let m=1; m<=HORIZON; m++){
+    const c = costs(p, m), next = costs(p, m+1);
+    const grant = m<=p.months ? p.pot/p.months : 0;
+    const compute = grant + carry;
+    const capacity = compute/(c.avg*DAYS);
+    const revenue = capacity*c.rev*DAYS;                       // the sanctuary is taken to be full
+    const reinvested = revenue*p.reinvest/100;
+    rows.push({m, grant, carry, compute, capacity, revenue, reinvested, cost:c.avg, rev:c.rev,
+               covers: (p.reinvest/100)*c.rev/next.avg,        // next month's agents paid for by this month's agents
+               grantOnly: grant/(c.avg*DAYS)});
+    carry = reinvested;
+  }
+  return {rows, c: costs(p, 1)};
+}
+
+// ---------- controls ----------
+const fmt = {
+  months: v => v+" months",
+  usdday: v => "$"+Number(v).toFixed(2)+" a day",
+  pct:    v => v+"%",
+  markup: v => "+"+v+"% ("+(1+v/100).toFixed(2)+"×)",
+  cheaper:   v => v==1 ? "flat" : Number(v).toFixed(2)+"× a year",
+  moreeff:   v => v==1 ? "flat" : Number(v).toFixed(2)+"× a year",
+  morevalue: v => v==1 ? "flat" : Number(v).toFixed(1)+"× a year"
+};
+const sliders = [];   // {k, fmt}
+document.querySelectorAll(".ctl[data-k]").forEach(el=>{
+  const k = el.dataset.k; P[k] = +el.dataset.v; sliders.push({k, f:el.dataset.fmt});
+  el.innerHTML = `<div class="top"><label for="s_${k}">${el.dataset.label}</label><span class="val" id="v_${k}"></span></div>
+    <input type="range" id="s_${k}" min="${el.dataset.min}" max="${el.dataset.max}" step="${el.dataset.step}" value="${el.dataset.v}">
+    ${el.dataset.hint ? `<div class="hint">${el.dataset.hint}</div>` : ""}`;
+});
+document.querySelectorAll(".triple").forEach(el=>{
+  const d = el.dataset;
+  const keys  = d.keys  ? d.keys.split("|")  : TIERS.map(t=>t[0]);
+  const names = d.names ? d.names.split("|") : TIERS.map(t=>t[1]);
+  const vals  = d.vals  ? d.vals.split("|")  : keys.map(()=>d.v);
+  let h = `<div class="tl">${d.label}</div>`;
+  keys.forEach((key,i)=>{
+    const k = d.prefix+key; P[k] = +vals[i]; sliders.push({k, f:d.fmt});
+    h += `<div class="trow"><span class="n">${names[i]}</span><input type="range" id="s_${k}" min="${d.min}" max="${d.max}" step="${d.step}" value="${vals[i]}"><span class="val" id="v_${k}"></span></div>`;
+  });
+  el.innerHTML = h + (d.hint ? `<div class="hint">${d.hint}</div>` : "");
+});
+sliders.forEach(({k})=>{
+  document.getElementById("s_"+k).addEventListener("input", e=>{
+    P[k] = +e.target.value;
+    if(k==="fracClosed" && P.fracClosed+P.fracOpen>100){ P.fracOpen = 100-P.fracClosed; document.getElementById("s_fracOpen").value = P.fracOpen; }
+    if(k==="fracOpen"   && P.fracClosed+P.fracOpen>100){ P.fracClosed = 100-P.fracOpen; document.getElementById("s_fracClosed").value = P.fracClosed; }
+    render();
+  });
+});
+const potEl = document.getElementById("pot"); P.pot = +potEl.value;
+potEl.addEventListener("input", ()=>{ P.pot = Math.max(0, +potEl.value||0); render(); });
+const logEl = document.getElementById("logy"); logEl.addEventListener("change", render);
+
+// ---------- settings survive a reload, and travel in the address (so a scenario can be shared as a link) ----------
+const DEFAULTS = Object.assign({}, P);
+function applyState(o){
+  for(const k in o){ if(!(k in DEFAULTS)) continue; const v = +o[k]; if(!isFinite(v)) continue; P[k] = v;
+    const el = k==="pot" ? potEl : document.getElementById("s_"+k); if(el) el.value = v; }
+}
+if(location.hash.length>1){ const o = {}; location.hash.slice(1).split("&").forEach(kv=>{ const [k,v] = kv.split("="); o[k] = v; }); applyState(o); }
+function saveState(){
+  const h = Object.keys(DEFAULTS).filter(k=>P[k]!==DEFAULTS[k]).map(k=>k+"="+P[k]).join("&");
+  history.replaceState(null, "", h ? "#"+h : location.pathname);
+}
+document.getElementById("reset").addEventListener("click", e=>{ e.preventDefault(); applyState(DEFAULTS); render(); });
+const RATES = {dropBase:3, dropOpen:2, dropClosed:1.5, effBase:1.5, effOpen:1.3, prodBase:1.3, prodOpen:2, prodClosed:2.5};
+document.getElementById("rates").addEventListener("click", e=>{ e.preventDefault(); applyState(Object.assign({}, DEFAULTS, RATES)); render(); });
+const EMBEDDED = window.self !== window.top;
+if(EMBEDDED) document.body.classList.add("embedded");
+function postHeight(){ if(EMBEDDED) window.parent.postMessage({sanctuaryModelHeight: document.querySelector(".wrap").offsetHeight}, "*"); }
+window.addEventListener("resize", postHeight);
+
+// ---------- formatting ----------
+function N(n){ n = Math.round(n); const a = Math.abs(n);
+  if(a>=1e12) return (n/1e12).toFixed(a>=1e13?0:1)+"T";
+  if(a>=1e9) return (n/1e9).toFixed(a>=1e10?0:1)+"B"; if(a>=1e6) return (n/1e6).toFixed(a>=1e7?0:1)+"M";
+  if(a>=1e5) return Math.round(n/1e3)+"K"; return n.toLocaleString("en-US"); }
+const USD = n => "$"+N(n);
+const CAP = 1e9;                 // nothing above a billion agents is shown as a number
+const A = n => n>CAP ? "over 1B" : N(n);
+function niceMax(v){ if(v<=0) return 10; const e = Math.pow(10, Math.floor(Math.log10(v))); for(const s of [1,1.5,2,2.5,3,4,5,6,8,10]) if(v<=s*e) return s*e; return 10*e; }
+
+// ---------- drawing ----------
+function render(){
+  saveState();
+  sliders.forEach(({k,f})=>{ document.getElementById("v_"+k).textContent = fmt[f](P[k]); });
+  const {rows, c} = simulate(P);
+  const r1 = rows[0], rEnd = rows[HORIZON-1], rGrant = rows[P.months-1];
+
+  document.getElementById("headline").innerHTML =
+    `Capacity at month 1: <b>${N(r1.capacity)} agents</b>, from ${USD(r1.grant)} a month at an average of $${c.avg.toFixed(2)} an agent a day.`;
+  const pc = r => Math.round(r.covers*100)+"%";
+  const cross = rows.find(r=>r.covers>=1);
+  const selfLine = r1.covers>=1
+    ? `Reinvested revenue pays for <b>${pc(r1)}</b> of next month's agents from the start, so the sanctuary grows on its own.`
+    : cross ? `Reinvested revenue pays for <b>${pc(r1)}</b> of next month's agents at first and passes 100% in <b>month ${cross.m}</b>; from then on the sanctuary grows on its own.`
+            : `Reinvested revenue pays for <b>${pc(r1)}</b> of next month's agents at first and <b>${pc(rEnd)}</b> by month ${HORIZON}, so it does not yet hold its size without the grant.`;
+  const when = v => { const h = rows.find(r=>r.capacity>=v); return h ? `in <b>month ${h.m}</b>` : `not within ${HORIZON} months`; };
+  const capNote = rEnd.capacity>CAP ? ` Past a billion the number stops meaning anything: by then arrivals and buyers are the limit, and the model does not cap them.` : ``;
+  document.getElementById("second").innerHTML =
+    `In month 1 outside work brings in <b>${USD(r1.revenue)}</b>, and <b>${USD(r1.reinvested)}</b> of it buys compute for month 2. ${selfLine}`
+    + `<br>It reaches 500,000 agents ${when(5e5)} and 2 million ${when(2e6)}.${capNote}`;
+
+  // chart
+  const W=800,H=380,L=62,R=150,T=30,B=46, x0=L, x1=W-R, y0=H-B, y1=T;
+  rows.forEach(r=>{ r.shown = Math.min(r.capacity, CAP); });
+  const peak = Math.max(...rows.map(r=>r.shown));
+  const log = logEl.checked;
+  const X = m => x0 + (x1-x0)*m/HORIZON;
+  let Y, yt;
+  if(log){
+    const top = Math.max(2, Math.ceil(Math.log10(Math.max(peak,10))));
+    Y = v => y0 - (y0-y1)*Math.log10(Math.max(v,1))/top;
+    yt = []; for(let e=0;e<=top;e++) yt.push(Math.pow(10,e));
+  } else {
+    const ymax = niceMax(peak*1.1);
+    Y = v => y0 - (y0-y1)*v/ymax; yt = [0, ymax/2, ymax];
+  }
+  let s = "";
+  yt.forEach(v=>{ if(v>(log?1:0)) s += `<line class="grid" x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}"/>`; s += `<text class="tick" x="${x0-8}" y="${Y(v)+4}" text-anchor="end">${N(v)}</text>`; });
+  s += `<text class="labm" x="${x0-52}" y="${y1-12}">agents</text>`;
+  s += `<line class="axis" x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}"/>`;
+  for(let m=0; m<=HORIZON; m+=6){ s += `<line class="axis" x1="${X(m)}" x2="${X(m)}" y1="${y0}" y2="${y0+4}"/><text class="tick" x="${X(m)}" y="${y0+18}" text-anchor="middle">${m}</text>`; }
+  s += `<text class="labm" x="${(x0+x1)/2}" y="${y0+38}" text-anchor="middle">months since the first payment</text>`;
+  const step = key => { let d = `M${X(0)},${Y(rows[0][key])}`; rows.forEach((r,i)=>{ d += ` V${Y(r[key])} H${X(i+1)}`; }); return d; };
+  // the grant alone, for comparison
+  s += `<path d="${step("grantOnly")}" fill="none" stroke="#c8c2b5" stroke-width="1.4"/>`;
+  const base = Y(log?1:0);
+  if(base - Y(r1.grantOnly) > 30) s += `<text class="labm" x="${X(Math.min(P.months,HORIZON))-6}" y="${Y(r1.grantOnly)+17}" text-anchor="end">the grant alone</text>`;
+  // with reinvested revenue
+  s += `<path d="${step("shown")}" fill="none" stroke="#1a1a1a" stroke-width="1.8"/>`;
+  const low1 = base - Y(r1.capacity) < 34;                     // month-1 dot sits near the axis: label goes above it
+  s += `<circle cx="${X(0)}" cy="${Y(r1.capacity)}" r="4" fill="#b3261e"/>`;
+  s += `<text class="focal" x="${X(0)+9}" y="${Y(r1.capacity)+(low1?-12:22)}">${N(r1.capacity)}</text>`;
+  const rising = P.months<HORIZON && rows[P.months].capacity > rGrant.capacity;   // still growing after the grant
+  const gy = Y(rGrant.shown), lowG = base - gy < 34;
+  s += `<circle cx="${X(P.months)}" cy="${gy}" r="3" fill="#1a1a1a"/>`;
+  if(rising && !lowG) s += `<text x="${X(P.months)+9}" y="${gy+17}"><tspan class="num">${A(rGrant.capacity)}</tspan><tspan class="labm" dx="7">month ${P.months}, grant spent</tspan></text>`;
+  else                s += `<text x="${X(P.months)-9}" y="${gy-10}" text-anchor="end"><tspan class="labm">month ${P.months}, grant spent</tspan><tspan class="num" dx="7">${A(rGrant.capacity)}</tspan></text>`;
+  s += `<circle cx="${X(HORIZON)}" cy="${Y(rEnd.shown)}" r="3" fill="#1a1a1a"/>`;
+  s += `<text class="num" x="${X(HORIZON)+8}" y="${Y(rEnd.shown)+4}">${A(rEnd.capacity)}</text>`;
+  s += `<text class="labm" x="${X(HORIZON)+8}" y="${Y(rEnd.shown)-13}">month ${HORIZON}</text>`;
+  // his bar, marked where the line crosses it
+  [[5e5,"500K"],[2e6,"2M"]].forEach(([v,name])=>{ const hit = rows.find(r=>r.capacity>=v); if(!hit || peak<v) return;
+    s += `<circle cx="${X(hit.m-1)}" cy="${Y(v)}" r="3" fill="#b3261e"/><text class="labm" x="${X(hit.m-1)-8}" y="${Y(v)-6}" text-anchor="end" style="fill:#b3261e">${name}, month ${hit.m}</text>`; });
+  document.getElementById("chart").innerHTML = s;
+
+  // month 1 by tier
+  let h = `<tr><th>At month 1</th><th>Agents</th><th>Cost<br>a day</th><th>Working<br>outside</th><th>A worker<br>brings in</th><th>Revenue<br>a month</th></tr>`;
+  TIERS.forEach(([key,name])=>{ const x = c.t[key], n = r1.capacity*x.frac;
+    h += `<tr><td>${name}</td><td class="n">${N(n)}</td><td class="n">$${x.cost.toFixed(2)}</td><td class="n">${N(n*x.work)}</td><td class="n">$${x.revWorker.toFixed(2)}</td><td class="n">${USD(n*x.work*x.revWorker*DAYS)}</td></tr>`; });
+  h += `<tr><td><b>All agents</b></td><td class="n"><b>${N(r1.capacity)}</b></td><td class="n"><b>$${c.avg.toFixed(2)}</b></td><td class="n"></td><td class="n"></td><td class="n"><b>${USD(r1.revenue)}</b></td></tr>`;
+  document.getElementById("tbl").innerHTML = h;
+
+  // through time
+  let g = `<tr><th>Month</th><th>Agents</th><th>Cost of an<br>agent a day</th><th>An agent<br>brings in</th><th>Reinvestment<br>pays for</th><th>Revenue<br>that month</th><th>Reinvested<br>next month</th></tr>`;
+  [1,6,12,18,24,30,36].forEach(m=>{ const r = rows[m-1];
+    const over = r.capacity>CAP;
+    g += `<tr><td>${m}</td><td class="n">${A(r.capacity)}</td><td class="n">$${r.cost.toFixed(2)}</td><td class="n">$${r.rev.toFixed(2)}</td><td class="n">${pc(r)}</td><td class="n">${over?"":USD(r.revenue)}</td><td class="n">${over?"":USD(r.reinvested)}</td></tr>`; });
+  document.getElementById("tbl2").innerHTML = g;
+
+  document.getElementById("formula").innerHTML =
+    `a worker brings in = ½ of the agent's tokens × their API price that month × (1 + sales premium) × productivity growth so far<br>`
+    + `"an agent brings in" is averaged over workers and non-workers; "reinvestment pays for" = ${P.reinvest}% × that ÷ next month's cost of an agent<br>`
+    + `next month's compute = grant + ${P.reinvest}% × this month's revenue; agents = compute ÷ (cost of an agent a day × ${DAYS.toFixed(2)})<br>`
+    + `each yearly rate is applied month by month: a price that falls 3× a year falls 8.7% a month`;
+  postHeight();
+}
+render();
+</script>
+</body>
+</html>
